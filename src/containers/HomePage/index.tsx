@@ -1,9 +1,14 @@
 import React from 'react';
+import ShopQuality from '../../components/ShopQuality';
+import './style.css';
 
 class HomePage extends React.Component {
   render() {
     return (
-      <h1>Home page</h1>
+      <div className="homepage-container">
+        <div className="cover-image" />
+        <ShopQuality />
+      </div>
     )
   }
 }
