@@ -1,16 +1,26 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
-import { createStore } from 'redux';
+import { applyMiddleware, createStore } from 'redux';
+import createSagaMiddleware from 'redux-saga';
 import './App.css';
 import HeaderNavigation from './components/HeaderNavigation';
 import { ROUTE } from './constants/route';
 import AllProductsPage from './containers/AllProductsPage';
 import CheckoutPage from './containers/CheckoutPage';
 import HomePage from './containers/HomePage';
+import ProductDetailsAction from './store/actions/productDetailsAction';
 import { rootReducer } from './store/rootReducer';
+import startRootSaga from './store/rootSaga';
 
-const store = createStore(rootReducer);
+const sagaMiddleware = createSagaMiddleware();
+const store = createStore(rootReducer, applyMiddleware(sagaMiddleware));
+
+sagaMiddleware.run(startRootSaga)
+
+store.dispatch({ type: ProductDetailsAction.FETCH_PRODUCT_DETAILS });
+
+(window as any).shopspree = store;
 
 function App() {
   return (

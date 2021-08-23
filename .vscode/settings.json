@@ -4,7 +4,6 @@
     "extensions": [".js", ".ts", ".html"]
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll.tslint": false,
     "source.organizeImports": true
   },
   "editor.formatOnSave": true
