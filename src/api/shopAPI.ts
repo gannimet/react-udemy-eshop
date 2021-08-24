@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ProductFilters } from '../store/reducers/shopReducer';
 
 export interface GetProductsOptions {
   page?: number;
@@ -6,7 +7,11 @@ export interface GetProductsOptions {
   category?: string[];
 }
 
-class ProductDetailsAPI {
+export interface ProductFiltersAPIResponse {
+  productFilters: ProductFilters;
+}
+
+class ShopAPI {
   getProducts = ({ page, size, category }: GetProductsOptions) => {
     const pageQueryParam = `page=${page || ''}`;
     const sizeQueryParam = `&size=${size || ''}`;
@@ -14,6 +19,10 @@ class ProductDetailsAPI {
 
     return axios.get(`http://localhost:1234/products?${pageQueryParam}${sizeQueryParam}${categoryQueryParam}`)
   };
+
+  getProductFilters = () => {
+    return axios.get('http://localhost:1234/productFilters');
+  }
 }
 
-export default ProductDetailsAPI;
+export default ShopAPI;
