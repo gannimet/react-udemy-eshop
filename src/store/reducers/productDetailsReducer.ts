@@ -1,3 +1,4 @@
+import update from 'immutability-helper';
 import { Reducer } from 'redux';
 import ProductDetailsAction, { ProductDetailsReducerAction } from '../actions/productDetailsAction';
 
@@ -15,27 +16,40 @@ export interface Product {
   id: string;
   category: string[];
   title: string;
-  isBestSeller?: boolean;
   variants: ProductVariant[];
 }
 
-export interface ProductDetails {
+export interface ShopProducts {
   page?: number;
   nextPage?: boolean;
   productsCount: number;
   products: Product[];
+  totalPages?: number;
+}
+
+export interface ProductDetails {
+  shopProducts: ShopProducts;
 }
 
 const productDetailsInitialState: ProductDetails = {
-  products: [],
-  productsCount: 0,
+  shopProducts: {
+    products: [],
+    productsCount: 0,
+  },
 }
 
 export const productDetailsReducer: Reducer<ProductDetails, ProductDetailsReducerAction> =
   (state = productDetailsInitialState, action) => {
     switch (action.type) {
-      case ProductDetailsAction.SET_PRODUCT_DETAILS:
-        return action.productDetails;
+      case ProductDetailsAction.SET_SHOP_PRODUCTS:
+        return update(
+          state,
+          {
+            shopProducts: {
+              $set: action.shopProducts,
+            }
+          }
+        );
       default:
         return state;
     }

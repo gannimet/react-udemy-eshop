@@ -10,16 +10,13 @@ import { ROUTE } from './constants/route';
 import AllProductsPage from './containers/AllProductsPage';
 import CheckoutPage from './containers/CheckoutPage';
 import HomePage from './containers/HomePage';
-import ProductDetailsAction from './store/actions/productDetailsAction';
 import { rootReducer } from './store/rootReducer';
 import startRootSaga from './store/rootSaga';
 
 const sagaMiddleware = createSagaMiddleware();
 const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(sagaMiddleware)));
 
-sagaMiddleware.run(startRootSaga)
-
-store.dispatch({ type: ProductDetailsAction.FETCH_PRODUCT_DETAILS });
+sagaMiddleware.run(startRootSaga);
 
 (window as any).shopspree = store;
 

@@ -1,19 +1,23 @@
 import React from 'react';
-import { connect, MapStateToProps } from 'react-redux';
+import { connect, MapDispatchToPropsFunction, MapStateToProps } from 'react-redux';
 import ProductCard from '../../components/ProductCard';
+import ProductDetailsAction from '../../store/actions/productDetailsAction';
 import { StoreStateType } from '../../store/rootReducer';
-import { AllProductsOwnProps, AllProductsPageProps, AllProductsStateProps } from './interface';
+import { AllProductsDispatchToProps, AllProductsOwnProps, AllProductsPageProps, AllProductsStateProps } from './interface';
 import './style.css';
 
 class AllProductsPage extends React.Component<AllProductsPageProps> {
-  renderAllProducts = () => {
-    const { productDetails } = this.props;
+  componentDidMount() {
+    this.props.fetchShopProducts({});
+  }
 
-    return productDetails.products.map(({ title, variants, id }) => {
+  renderAllProducts = () => {
+    const { shopProducts } = this.props;
+
+    return shopProducts.products.map(({ title, variants, id }) => {
       return (
-        <div className="product-item-container">
+        <div key={id} className="product-item-container">
           <ProductCard
-            key={id}
             name={title}
             url={variants[0].image} />
         </div>
@@ -36,8 +40,16 @@ const mapStateToProps: MapStateToProps<
   StoreStateType
 > = (state) => {
   return {
-    productDetails: state.productDetails,
+    shopProducts: state.productDetails.shopProducts,
   };
 };
 
-export default connect(mapStateToProps)(AllProductsPage);
+const mapDispatchToProps: MapDispatchToPropsFunction<AllProductsDispatchToProps, AllProductsOwnProps> = (dispatch) => {
+  const { fetchShopProducts } = new ProductDetailsAction();
+
+  return {
+    fetchShopProducts: (options) => dispatch(fetchShopProducts(options)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AllProductsPage);
