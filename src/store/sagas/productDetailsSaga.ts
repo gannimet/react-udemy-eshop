@@ -4,7 +4,7 @@ import ProductDetailsAPI from '../../api/productDetailsAPI';
 import ProductDetailsAction, { FetchShopProductsAction } from '../actions/productDetailsAction';
 import { ShopProducts } from '../reducers/productDetailsReducer';
 
-function* workerFetchProductDetailSaga(action: FetchShopProductsAction) {
+function* workerFetchShopProductsSaga(action: FetchShopProductsAction) {
   const productDetailsAPI = new ProductDetailsAPI();
   const productDetailsAction = new ProductDetailsAction();
 
@@ -18,6 +18,21 @@ function* workerFetchProductDetailSaga(action: FetchShopProductsAction) {
   }
 }
 
+function* workerFetchBestSellerProductsSaga() {
+  const productDetailsAPI = new ProductDetailsAPI();
+  const productDetailsAction = new ProductDetailsAction();
+
+  try {
+    const response: AxiosResponse = yield call(productDetailsAPI.getProducts, { category: ['Best Seller'] });
+    const { products } = response.data as ShopProducts;
+  
+    yield put(productDetailsAction.setBestSellerProducts(products));
+  } catch (err) {
+    console.log('Error fetching product details:', err);
+  }
+}
+
 export function* watchProductDetailsSaga() {
-  yield takeLatest(ProductDetailsAction.FETCH_SHOP_PRODUCTS, workerFetchProductDetailSaga);
+  yield takeLatest(ProductDetailsAction.FETCH_SHOP_PRODUCTS, workerFetchShopProductsSaga);
+  yield takeLatest(ProductDetailsAction.FETCH_ALL_BEST_SELLER_PRODUCTS, workerFetchBestSellerProductsSaga);
 }
