@@ -5,6 +5,7 @@ import ProductCard from '../../components/ProductCard';
 import ShopAction from '../../store/actions/shopAction';
 import UserAction from '../../store/actions/userAction';
 import { StoreStateType } from '../../store/rootReducer';
+import Button from '../../ui-components/Button';
 import { AllProductsDispatchToProps, AllProductsOwnProps, AllProductsPageProps, AllProductsStateProps } from './interface';
 import './style.css';
 
@@ -36,6 +37,7 @@ class AllProductsPage extends React.Component<AllProductsPageProps> {
 
     return (
       <div className="all-products-page-container">
+        <Button type="primary" onClick={() => {}}>Test</Button>
         <AllProductsSideBar
           productFilters={productFilters}
           userFilters={userFilters}
