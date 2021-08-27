@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect, MapDispatchToPropsFunction, MapStateToProps } from 'react-redux';
 import AllProductsSideBar from '../../components/AllProductsSideBar';
+import Pagination from '../../components/Pagination';
 import ProductCard from '../../components/ProductCard';
 import ShopAction from '../../store/actions/shopAction';
 import UserAction from '../../store/actions/userAction';
 import { StoreStateType } from '../../store/rootReducer';
-import Button from '../../ui-components/Button';
 import { AllProductsDispatchToProps, AllProductsOwnProps, AllProductsPageProps, AllProductsStateProps } from './interface';
 import './style.css';
 
@@ -32,18 +32,22 @@ class AllProductsPage extends React.Component<AllProductsPageProps> {
     });
   };
 
+  handlePageChange = (selectedPage: number) => {}
+
   render() {
     const { productFilters, userFilters, updateUserFilters } = this.props;
 
     return (
       <div className="all-products-page-container">
-        <Button type="primary" onClick={() => {}}>Test</Button>
         <AllProductsSideBar
           productFilters={productFilters}
           userFilters={userFilters}
           onUpdateUserFilters={updateUserFilters} />
         <div className="all-products-container">
-          {this.renderAllProducts()}
+          <div className="all-products">
+            {this.renderAllProducts()}
+          </div>
+          <Pagination onChange={this.handlePageChange} numberOfPages={10} />
         </div>
       </div>
     )
