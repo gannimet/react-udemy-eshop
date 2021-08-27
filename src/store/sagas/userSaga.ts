@@ -11,14 +11,23 @@ import { StoreStateType } from '../rootReducer';
 function* workerUpdateUserFiltersSaga(action: UpdateUserFiltersAction) {
   const shopAPI = new ShopAPI();
   const shopAction = new ShopAction();
+  const userAction = new UserAction();
 
   try {
-    const response: AxiosResponse = yield call(shopAPI.getProducts, {
-      category: convertFiltersToCategories(action.filters)
-    });
+    const user: User = yield select((state: StoreStateType) => state.user);
+    const newUserPage = 1;
+  
+    const options: GetProductsOptions = {
+      page: newUserPage,
+      size: user.shopProductsSize,
+      category: convertFiltersToCategories(action.filters),
+    };
+
+    const response: AxiosResponse = yield call(shopAPI.getProducts, options);
     const shopProducts = response.data as ShopProducts;
 
     yield put(shopAction.setShopProducts(shopProducts));
+    yield put(userAction.updateUserShopProductsPage(newUserPage));
   } catch (err) {
     console.log(err);
   }

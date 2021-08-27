@@ -24,7 +24,7 @@ export interface ShopProducts {
   nextPage?: boolean;
   productsCount: number;
   products: Product[];
-  totalPages?: number;
+  totalPages: number;
 }
 
 export interface ProductFilters {
@@ -43,6 +43,7 @@ const shopInitialState: Shop = {
   shopProducts: {
     products: [],
     productsCount: 0,
+    totalPages: 1,
   },
   bestSellerProducts: [],
   productFilters: {

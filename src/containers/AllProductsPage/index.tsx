@@ -32,10 +32,18 @@ class AllProductsPage extends React.Component<AllProductsPageProps> {
     });
   };
 
-  handlePageChange = (selectedPage: number) => {}
+  handlePageChange = (selectedPage: number) => {
+    const { userSelectedPage, updateUserShopProductsPage } = this.props;
+
+    if (userSelectedPage !== selectedPage) {
+      updateUserShopProductsPage(selectedPage);
+    }
+  }
 
   render() {
-    const { productFilters, userFilters, updateUserFilters } = this.props;
+    const {
+      productFilters, userFilters, updateUserFilters, shopProducts, userSelectedPage
+    } = this.props;
 
     return (
       <div className="all-products-page-container">
@@ -47,7 +55,10 @@ class AllProductsPage extends React.Component<AllProductsPageProps> {
           <div className="all-products">
             {this.renderAllProducts()}
           </div>
-          <Pagination onChange={this.handlePageChange} numberOfPages={10} />
+          <Pagination
+            onChange={this.handlePageChange}
+            numberOfPages={shopProducts.totalPages}
+            overrideSelectedPage={userSelectedPage} />
         </div>
       </div>
     )
@@ -60,23 +71,25 @@ const mapStateToProps: MapStateToProps<
   StoreStateType
 > = (state) => {
   const { shopProducts, productFilters } = state.shop;
-  const { filters } = state.user;
+  const { filters, shopProductsPage } = state.user;
 
   return {
     shopProducts,
     productFilters,
     userFilters: filters,
+    userSelectedPage: shopProductsPage,
   };
 };
 
 const mapDispatchToProps: MapDispatchToPropsFunction<AllProductsDispatchToProps, AllProductsOwnProps> = (dispatch) => {
   const { fetchShopProducts, fetchShopProductsAndFilters } = new ShopAction();
-  const { updateUserFilters } = new UserAction();
+  const { updateUserFilters, updateUserShopProductsPage } = new UserAction();
 
   return {
     fetchShopProducts: (options) => dispatch(fetchShopProducts(options)),
     fetchShopProductsAndFilters: () => dispatch(fetchShopProductsAndFilters()),
     updateUserFilters: (filters) => dispatch(updateUserFilters(filters)),
+    updateUserShopProductsPage: (shopProductsPage) => dispatch(updateUserShopProductsPage(shopProductsPage)),
   };
 };
 

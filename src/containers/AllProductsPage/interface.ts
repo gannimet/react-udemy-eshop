@@ -8,6 +8,7 @@ export interface AllProductsStateProps {
   shopProducts: ShopProducts;
   productFilters: ProductFilters,
   userFilters: ProductFilters,
+  userSelectedPage: number;
 }
 
 export interface AllProductsOwnProps extends RouteComponentProps {}
@@ -16,6 +17,7 @@ export interface AllProductsDispatchToProps {
   fetchShopProducts(options: GetProductsOptions): FetchShopProductsAction;
   fetchShopProductsAndFilters(): FetchShopProductsAndFiltersAction;
   updateUserFilters(filters: ProductFilters): UpdateUserFiltersAction;
+  updateUserShopProductsPage(shopProductsPage: number): any;
 }
 
 export type AllProductsPageProps = AllProductsStateProps & AllProductsOwnProps & AllProductsDispatchToProps;
