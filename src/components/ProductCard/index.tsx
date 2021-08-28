@@ -1,18 +1,50 @@
 import React from 'react';
-import { ProductCardProps } from './interface';
+import ProductCardModal from '../ProductCardModal';
+import { ProductCardProps, ProductCardState } from './interface';
 import './style.css';
 
-const ProductCard: React.FC<ProductCardProps> = ({name, url}) => {
-  return (
-    <div className="product-card-container">
-      <div
-        className="product-image"
-        style={{ backgroundImage: `url(${url})` }} />
-      <div className="product-details">
-        <p>{name}</p>
+class ProductCard extends React.Component<ProductCardProps, ProductCardState> {
+  constructor(props: ProductCardProps) {
+    super(props);
+
+    this.state = {
+      showDetails: false,
+    }
+  }
+
+  onClickProductCard = () => {
+    this.setState({
+      showDetails: true,
+    })
+  }
+
+  onClickOutsideModalBody = () => {
+    this.setState({
+      showDetails: false,
+    })
+  }
+
+  render() {
+    const { product } = this.props;
+    const { showDetails } = this.state;
+    const { title, variants } = product;
+    const imageURL = variants[0].image;
+
+    return (
+      <div onClick={this.onClickProductCard} className="product-card-container">
+        <div
+          className="product-image"
+          style={{ backgroundImage: `url(${imageURL})` }} />
+        <div className="product-details">
+          <p>{title}</p>
+        </div>
+        <ProductCardModal
+          show={showDetails}
+          product={product}
+          onClickOutsideModalBody={this.onClickOutsideModalBody} />
       </div>
-    </div>
-  )
-};
+    )
+  }
+}
 
 export default ProductCard;
