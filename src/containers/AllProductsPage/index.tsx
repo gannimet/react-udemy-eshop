@@ -6,6 +6,7 @@ import ProductCard from '../../components/ProductCard';
 import ShopAction from '../../store/actions/shopAction';
 import UserAction from '../../store/actions/userAction';
 import { StoreStateType } from '../../store/rootReducer';
+import Modal from '../../ui-components/Modal';
 import { AllProductsDispatchToProps, AllProductsOwnProps, AllProductsPageProps, AllProductsStateProps } from './interface';
 import './style.css';
 
@@ -47,6 +48,9 @@ class AllProductsPage extends React.Component<AllProductsPageProps> {
 
     return (
       <div className="all-products-page-container">
+        <Modal>
+          <div>My first Modal</div>
+        </Modal>
         <AllProductsSideBar
           productFilters={productFilters}
           userFilters={userFilters}
