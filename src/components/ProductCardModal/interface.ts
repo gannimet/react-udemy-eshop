@@ -9,4 +9,5 @@ export interface ProductCardModalProps {
 
 export interface ProductCardModalState {
   selectedVariant: ProductVariantCompleteDetails;
+  quantity: number;
 }
