@@ -1,9 +1,12 @@
-import { Product } from '../../store/reducers/shopReducer';
+import { ProductVariantCompleteDetails } from '../../store/reducers/shopReducer';
 
 export interface ProductCardModalProps {
   show: boolean;
-  product: Product;
+  initialVariant: ProductVariantCompleteDetails;
+  variants: ProductVariantCompleteDetails[];
   onClickOutsideModalBody?(): void;
 }
 
-export interface ProductCardModalState {}
+export interface ProductCardModalState {
+  selectedVariant: ProductVariantCompleteDetails;
+}

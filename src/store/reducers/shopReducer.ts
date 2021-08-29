@@ -2,6 +2,14 @@ import update from 'immutability-helper';
 import { Reducer } from 'redux';
 import ShopAction, { ShopReducerAction } from '../actions/shopAction';
 
+export type ProductVariantCompleteDetails =
+  Omit<ProductVariant, 'id'> &
+  Omit<Product, 'id' | 'variants'> &
+  {
+    productId: string;
+    variantId: string;
+  };
+
 export interface ProductVariant {
   id: string;
   size: string;
