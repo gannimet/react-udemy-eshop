@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect, MapDispatchToPropsFunction, MapStateToProps } from 'react-redux';
 import ShopAction from '../../store/actions/shopAction';
+import UserAction from '../../store/actions/userAction';
+import { ProductPurchase } from '../../store/reducers/userReducer';
 import { StoreStateType } from '../../store/rootReducer';
 import ProductCard from '../ProductCard';
 import { BestSellerDispatchProps, BestSellerProps, BestSellerStateProps } from './interface';
@@ -16,11 +18,11 @@ class BestSeller extends React.Component<BestSellerProps> {
   }
 
   renderBestSellerProducts() {
-    const { bestSellerProducts } = this.props;
+    const { bestSellerProducts, addToCart } = this.props;
 
     return bestSellerProducts.map((product) => {
       return (
-        <ProductCard product={product} key={product.id} />
+        <ProductCard product={product} key={product.id} addToCart={addToCart} />
       );
     });
   }
@@ -45,9 +47,11 @@ const mapStateToProps: MapStateToProps<BestSellerStateProps, {}, StoreStateType>
 
 const mapDispatchToProps: MapDispatchToPropsFunction<BestSellerDispatchProps, {}> = (dispatch) => {
   const { fetchAllBestSellerProducts } = new ShopAction();
+  const { addToCart } = new UserAction();
 
   return {
     fetchAllBestSellerProducts: () => dispatch(fetchAllBestSellerProducts()),
+    addToCart: (productPurchase: ProductPurchase) => dispatch(addToCart(productPurchase)),
   };
 };
 

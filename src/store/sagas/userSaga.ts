@@ -3,7 +3,7 @@ import { call, put, select, takeLatest } from 'redux-saga/effects';
 import ShopAPI, { GetProductsOptions } from '../../api/shopAPI';
 import { convertFiltersToCategories } from '../../utils/helper';
 import ShopAction from '../actions/shopAction';
-import UserAction, { UpdateUserFiltersAction, UpdateUserShopProductsAction } from '../actions/userAction';
+import UserAction, { UpdateUserFiltersAction, UpdateUserShopProductsPageAction } from '../actions/userAction';
 import { ShopProducts } from '../reducers/shopReducer';
 import { User } from '../reducers/userReducer';
 import { StoreStateType } from '../rootReducer';
@@ -33,7 +33,7 @@ function* workerUpdateUserFiltersSaga(action: UpdateUserFiltersAction) {
   }
 }
 
-function* workerUpdateUserShopProductsPageSaga(action: UpdateUserShopProductsAction) {
+function* workerUpdateUserShopProductsPageSaga(action: UpdateUserShopProductsPageAction) {
   const shopAPI = new ShopAPI();
   const shopAction = new ShopAction();
 

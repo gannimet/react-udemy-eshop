@@ -61,6 +61,15 @@ class ProductCardModal extends React.Component<ProductCardModalProps, ProductCar
     }
   };
 
+  handleAddToCart = () => {
+    const { selectedVariant, quantity } = this.state;
+
+    this.props.addToCart({
+      ...selectedVariant,
+      quantity,
+    });
+  };
+
   render() {
     const { show, onClickOutsideModalBody, variants, variantsOptionsAvailable } = this.props;
     const { selectedVariant, quantity } = this.state;
@@ -96,7 +105,7 @@ class ProductCardModal extends React.Component<ProductCardModalProps, ProductCar
             <Button 
               type="primary"
               className="add-to-cart-button"
-              onClick={() => {}}>Add To Cart</Button>
+              onClick={this.handleAddToCart}>Add To Cart</Button>
           </div>
         </div>
       </Modal>

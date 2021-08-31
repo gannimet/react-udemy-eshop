@@ -26,7 +26,7 @@ class ProductCard extends React.Component<ProductCardProps, ProductCardState> {
   }
 
   render() {
-    const { product } = this.props;
+    const { product, addToCart } = this.props;
     const { showDetails } = this.state;
     const { initialVariant, variants, variantsOptionsAvailable } = getProductVariantDetails(product);
 
@@ -43,7 +43,8 @@ class ProductCard extends React.Component<ProductCardProps, ProductCardState> {
           initialVariant={initialVariant}
           variants={variants}
           onClickOutsideModalBody={this.onClickOutsideModalBody}
-          variantsOptionsAvailable={variantsOptionsAvailable} />
+          variantsOptionsAvailable={variantsOptionsAvailable}
+          addToCart={addToCart} />
       </div>
     ) : null;
   }
