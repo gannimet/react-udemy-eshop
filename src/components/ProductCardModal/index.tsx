@@ -17,8 +17,52 @@ class ProductCardModal extends React.Component<ProductCardModalProps, ProductCar
     };
   }
 
+  handleClickQuantityAddButton = () => {
+    const { quantity, selectedVariant } = this.state;
+
+    selectedVariant.stock > quantity && this.setState({
+      quantity: quantity + 1,
+    })
+  }
+
+  handleClickQuantityMinusButton = () => {
+    const { quantity } = this.state;
+
+    quantity > 1 && this.setState({
+      quantity: quantity - 1,
+    })
+  }
+
+  handleSizeChange = (size: string) => {
+    const { selectedVariant } = this.state;
+    const { variants } = this.props;
+
+    if (selectedVariant.size !== size) {
+      this.setState({
+        selectedVariant: variants.find((variant) => {
+          return variant.size === size && variant.stock;
+        })!,
+      })
+    }
+  };
+
+  handleColorChange = (color: string) => {
+    const { selectedVariant } = this.state;
+    const { variants } = this.props;
+
+    if (selectedVariant.color !== color) {
+      this.setState({
+        selectedVariant: variants.find((variant) => {
+          return variant.size === selectedVariant.size
+            && variant.color === color
+            && variant.stock > 0;
+        })!,
+      })
+    }
+  };
+
   render() {
-    const { show, onClickOutsideModalBody, variants } = this.props;
+    const { show, onClickOutsideModalBody, variants, variantsOptionsAvailable } = this.props;
     const { selectedVariant, quantity } = this.state;
     const { title, image } = selectedVariant;
 
@@ -39,10 +83,15 @@ class ProductCardModal extends React.Component<ProductCardModalProps, ProductCar
             <ProductCardModalPriceUI
               selectedVariant={selectedVariant} />
             <ProductCardModalQuantityUI
-              quantity={quantity} />
+              quantity={quantity}
+              onClickAdd={this.handleClickQuantityAddButton}
+              onClickMinus={this.handleClickQuantityMinusButton} />
             <ProductCardModalVariantOptions
               selectedVariant={selectedVariant}
-              variants={variants} />
+              variants={variants}
+              variantsOptionsAvailable={variantsOptionsAvailable}
+              onSizeChange={this.handleSizeChange}
+              onColorChange={this.handleColorChange} />
 
             <Button 
               type="primary"

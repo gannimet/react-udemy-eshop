@@ -3,7 +3,7 @@ import Button from '../../ui-components/Button/index';
 import { ProductCardModalVariantOptionsProps } from './interface';
 
 const ProductCardModalVariantOptions: React.FC<ProductCardModalVariantOptionsProps> = ({
-  variants, selectedVariant
+  variants, selectedVariant, variantsOptionsAvailable, onColorChange, onSizeChange
 }) => {
   const renderVariantOptionsContainer = (category: string, options: React.ReactNode[]) => {
     return (
@@ -16,44 +16,52 @@ const ProductCardModalVariantOptions: React.FC<ProductCardModalVariantOptionsPro
     );
   }
 
+  const handleSizeChange = (size: string) => () => {
+    onSizeChange(size);
+  }
+
+  const handleColorChange = (color: string) => () => {
+    onColorChange(color);
+  };
+
   const sizesUI: React.ReactNode[] = [];
   const colorsUI: React.ReactNode[] = [];
   const processData: string[] = [];
   const variantButtonClassName = 'variant-option-button';
 
-  variants.forEach(({ size, color }) => {
+  variants.forEach(({ size }) => {
     if (!processData.includes(size)) {
       sizesUI.push(
         <Button
           className={`${variantButtonClassName} size`}
-          onClick={() => {}}
+          onClick={handleSizeChange(size)}
           key={size}
           selected={selectedVariant.size === size}
+          disabled={!variantsOptionsAvailable[size]}
         >
           {size}
         </Button>
       );
     }
 
-    if (!processData.includes(color)) {
-      const arrayColors = color.split('&');
-      const backgroundStyle: React.CSSProperties = arrayColors.length > 1
-        ? { backgroundImage: `linear-gradient(${arrayColors.join(',')})` }
-        : { backgroundColor: color };
-
-      colorsUI.push(
-        <Button
-          className={`${variantButtonClassName} color`}
-          key={color}
-          onClick={() => {}}
-          selected={selectedVariant.color === color}
-          style={backgroundStyle}
-        />
-      );
-    }
-
-    processData.push(color);
     processData.push(size);
+  });
+
+  variantsOptionsAvailable[selectedVariant.size].forEach((color) => {
+    const arrayColors = color.split('&');
+    const backgroundStyle: React.CSSProperties = arrayColors.length > 1
+      ? { backgroundImage: `linear-gradient(${arrayColors.join(',')})` }
+      : { backgroundColor: color };
+
+    colorsUI.push(
+      <Button
+        className={`${variantButtonClassName} color`}
+        key={color}
+        onClick={handleColorChange(color)}
+        selected={selectedVariant.color === color}
+        style={backgroundStyle}
+      />
+    );
   });
 
   return (
