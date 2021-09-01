@@ -7,3 +7,7 @@ export interface ShoppingCartStateProps {
 export interface ShoppingCartOwnProps {}
 
 export type ShoppingCartProps = ShoppingCartStateProps & ShoppingCartOwnProps;
+
+export interface ShoppingCartState {
+  showPopover: boolean;
+}

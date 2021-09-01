@@ -52,22 +52,33 @@ class Popover extends React.Component<PopoverProps, PopoverState> {
   }
 
   componentDidUpdate(prevProps: PopoverProps, prevState: PopoverState) {
-    const { contentWidth, show } = this.state;
+    const { contentWidth } = this.state;
     const popperWidth = this.popperRef.current
       ? this.popperRef.current.getBoundingClientRect().width
       : 0;
 
-    if ((contentWidth === 0 || popperWidth !== contentWidth) && show) {
+    if ((contentWidth === 0 || popperWidth !== contentWidth) && this.getShowValue()) {
       this.setState({
         contentWidth: popperWidth,
       })
     }
   }
 
+  getShowValue = () => {
+    const { controlShow } = this.props;
+    const { show } = this.state;
+
+    return controlShow === undefined ? show : controlShow;
+  }
+
   handleContentClick = () => {
-    this.setState({
+    const { controlShow, onClick } = this.props;
+
+    controlShow === undefined && this.setState({
       show: !this.state.show,
-    })
+    });
+
+    onClick && onClick();
   };
 
   private renderChildElement() {
@@ -79,7 +90,7 @@ class Popover extends React.Component<PopoverProps, PopoverState> {
 
   private renderPopover() {
     const { content, position, popoverBodyClassName } = this.props;
-    const { show, childPosition, contentWidth } = this.state;
+    const { childPosition, contentWidth } = this.state;
     let style: React.CSSProperties;
 
     switch (position) {
@@ -97,7 +108,7 @@ class Popover extends React.Component<PopoverProps, PopoverState> {
         break;
     }
 
-    return show ? ReactDOM.createPortal(
+    return this.getShowValue() ? ReactDOM.createPortal(
       <div
         className="popover-content-container"
         ref={this.popperRef}
