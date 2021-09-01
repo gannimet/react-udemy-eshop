@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect, MapStateToProps } from 'react-redux';
 import { StoreStateType } from '../../store/rootReducer';
+import Popover from '../../ui-components/Popover';
 import { ShoppingCartOwnProps, ShoppingCartProps, ShoppingCartStateProps } from './interface';
 import './style.css';
 
@@ -11,17 +12,19 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({ cart }) => {
   ) : null;
 
   return (
-    <div className="shopping-cart-container">
-      <i className="nav-item fa fa-shopping-cart"></i>
-      {notificationUI}
-    </div>
+    <Popover position="bottomleft" content={<div>Hello Popover</div>}>
+      <div className="shopping-cart-container">
+        <i className="nav-item fa fa-shopping-cart"></i>
+        {notificationUI}
+      </div>
+    </Popover>
   )
 };
 
 const mapStateToProps: MapStateToProps<
-ShoppingCartStateProps,
-ShoppingCartOwnProps,
-StoreStateType
+  ShoppingCartStateProps,
+  ShoppingCartOwnProps,
+  StoreStateType
 > = (state) => {
   const { cart } = state.user;
   
