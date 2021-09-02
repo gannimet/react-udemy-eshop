@@ -4,7 +4,8 @@ import { ProductPurchase } from '../reducers/userReducer';
 export type UserReducerAction =
   | UpdateUserFiltersAction
   | UpdateUserShopProductsPageAction
-  | AddToCartAction;
+  | AddToCartAction
+  | RemoveFromCartAction;
 
 export interface UpdateUserFiltersAction {
   type: typeof UserAction.UPDATE_USER_FILTERS;
@@ -21,10 +22,16 @@ export interface AddToCartAction {
   productPurchase: ProductPurchase;
 }
 
+export interface RemoveFromCartAction {
+  type: typeof UserAction.REMOVE_FROM_CART;
+  productPurchase: ProductPurchase;
+}
+
 class UserAction {
   static readonly UPDATE_USER_FILTERS = 'UPDATE_USER_FILTERS';
   static readonly UPDATE_USER_SHOP_PRODUCTS_PAGE = 'UPDATE_USER_SHOP_PRODUCTS_PAGE';
   static readonly ADD_TO_CART = 'ADD_TO_CART';
+  static readonly REMOVE_FROM_CART = 'REMOVE_FROM_CART';
 
   updateUserFilters = (filters: ProductFilters): UpdateUserFiltersAction => {
     return {
@@ -46,6 +53,13 @@ class UserAction {
       productPurchase,
     };
   };
+
+  removeFromCart = (productPurchase: ProductPurchase): RemoveFromCartAction => {
+    return {
+      type: UserAction.REMOVE_FROM_CART,
+      productPurchase,
+    };
+  }
 }
 
 export default UserAction;

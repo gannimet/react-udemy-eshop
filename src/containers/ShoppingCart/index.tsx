@@ -1,11 +1,14 @@
 import React from 'react';
-import { connect, MapStateToProps } from 'react-redux';
+import { connect, MapDispatchToPropsFunction, MapStateToProps } from 'react-redux';
 import { Link } from 'react-router-dom';
+import ShoppingCartProduct from '../../components/ShoppingCartProduct/index';
 import { ROUTE } from '../../constants/route';
+import UserAction from '../../store/actions/userAction';
+import { ProductPurchase } from '../../store/reducers/userReducer';
 import { StoreStateType } from '../../store/rootReducer';
 import Button from '../../ui-components/Button';
 import Popover from '../../ui-components/Popover';
-import { ShoppingCartOwnProps, ShoppingCartProps, ShoppingCartState, ShoppingCartStateProps } from './interface';
+import { ShoppingCartDispatchProps, ShoppingCartOwnProps, ShoppingCartProps, ShoppingCartState, ShoppingCartStateProps } from './interface';
 import './style.css';
 
 class ShoppingCart extends React.Component<ShoppingCartProps, ShoppingCartState> {
@@ -25,8 +28,27 @@ class ShoppingCart extends React.Component<ShoppingCartProps, ShoppingCartState>
     });
   }
 
+  handleRemoveFromCart = (product: ProductPurchase) => {
+    const { cart, removeFromCart } = this.props;
+
+    if (cart.length === 1) {
+      this.setState({
+        showPopover: false,
+      });
+    }
+
+    removeFromCart(product);
+  };
+
   getAllProducts = () => {
-    return null;
+    const { cart } = this.props;
+
+    return cart.map((product) => (
+      <ShoppingCartProduct
+        key={`${product.productId}-${product.variantId}`}
+        product={product}
+        removeFromCart={this.handleRemoveFromCart} />
+    ));
   }
 
   render() {
@@ -90,4 +112,15 @@ const mapStateToProps: MapStateToProps<
   };
 };
 
-export default connect(mapStateToProps)(ShoppingCart);
+const mapDispatchToProps: MapDispatchToPropsFunction<
+  ShoppingCartDispatchProps,
+  ShoppingCartOwnProps
+> = (dispatch) => {
+  const { removeFromCart } = new UserAction();
+
+  return {
+    removeFromCart: (productPurchase) => dispatch(removeFromCart(productPurchase)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ShoppingCart);
