@@ -3,7 +3,7 @@ import { InputProps } from './interface';
 import './style.css';
 
 const Input: React.FC<InputProps> = (
-  { label, onChange, error, positive, inputStyle, inputContainerStyle },
+  { label, onChange, error, positive, inputStyle, inputContainerStyle, inputRef },
 ) => {
   const overrideClassName = (error && 'error-ui')
     || (positive && 'positive-ui')
@@ -16,7 +16,9 @@ const Input: React.FC<InputProps> = (
         <input
           style={inputStyle}
           onChange={onChange}
-          className={overrideClassName} />
+          className={overrideClassName}
+          ref={inputRef}
+        />
       </label>
       {error && <div className="error-message">{error}</div>}
     </div>

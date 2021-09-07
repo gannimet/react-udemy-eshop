@@ -9,7 +9,7 @@ export type CustomerInformationFieldsList = {
   [field in CustomerInformationField]: string;
 };
 
-export const CUSTOMER_INFORMATION_FIELD_LABELS: CustomerInformationFieldsList = {
+export const CUSTOMER_INFORMATION_FIELDS_LIST: CustomerInformationFieldsList = {
   completeName: 'Complete Name (Last Name, First Name, M. I.)',
   address: 'Address (House No., Lot, Blk, Street)',
   city: 'City',
@@ -18,3 +18,13 @@ export const CUSTOMER_INFORMATION_FIELD_LABELS: CustomerInformationFieldsList = 
 };
 
 export const CUSTOMER_INFORMATION_FIELD_WIDTH = 'Calc(100% - 20px)';
+
+export const CUSTOMER_INFORMATION_FIELD_ERROR = 'Please complete this field.';
+
+export const CUSTOMER_INFORMATION_FIELD_INITIAL_STATE: CustomerInformationFieldsList = {
+  completeName: '',
+  address: '',
+  city: '',
+  stateOrProvince: '',
+  mobileNo: '',
+}

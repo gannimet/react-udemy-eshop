@@ -7,4 +7,5 @@ export interface InputProps {
   positive?: boolean;
   inputStyle?: React.CSSProperties;
   inputContainerStyle?: React.CSSProperties;
+  inputRef?: React.RefObject<HTMLInputElement>;
 }
