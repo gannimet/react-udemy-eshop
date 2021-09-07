@@ -2,6 +2,7 @@ import React from 'react';
 import { connect, MapStateToProps } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import CheckoutPageProduct from '../../components/CheckoutPageProduct/index';
+import CustomerInformation from '../../components/CustomerInformation';
 import { ROUTE } from '../../constants/route';
 import { StoreStateType } from '../../store/rootReducer';
 import { getSubTotalPrice } from '../../utils/productUtils';
@@ -59,7 +60,7 @@ class CheckoutPage extends React.Component<CheckoutPageProps> {
           </div>
         </div>
 
-        <div className="customer-info"></div>
+        <CustomerInformation />
       </div>
     ) : <Redirect to={ROUTE.HOME} />
   }
