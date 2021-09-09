@@ -40,6 +40,8 @@ export const userReducer: Reducer<User, UserReducerAction> = (state = userInitia
       });
 
       return update(state, { cart: { $set: newCart } });
+    case UserAction.CLEAR_CART:
+      return update(state, { cart: { $set: [] } });
     default:
       return state;
   }

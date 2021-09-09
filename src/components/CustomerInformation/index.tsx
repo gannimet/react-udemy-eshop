@@ -1,4 +1,6 @@
 import React from 'react';
+import ShopAPI from '../../api/shopAPI';
+import { ROUTE } from '../../constants/route';
 import {
   CustomerInformationField,
   CustomerInformationFieldsList,
@@ -9,6 +11,8 @@ import {
 } from '../../constants/user';
 import Button from '../../ui-components/Button';
 import Input from '../../ui-components/Input';
+import Modal from '../../ui-components/Modal';
+import { omit } from '../../utils/helper';
 import { CustomerInformationFieldRefs, CustomerInformationProps, CustomerInformationState } from './interface';
 import './style.css';
 
@@ -27,6 +31,7 @@ class CustomerInformation extends React.Component<
       error: {
         ...CUSTOMER_INFORMATION_FIELD_INITIAL_STATE
       },
+      showThankYouModal: false,
     };
 
     Object.keys(CUSTOMER_INFORMATION_FIELDS_LIST).forEach((key) => {
@@ -86,13 +91,33 @@ class CustomerInformation extends React.Component<
   };
 
   handleButtonClick = () => {
+    const { cart } = this.props;
+
     this.setState({
       hasCompletePurchaseClick: true,
     })
 
     if (this.allFieldsAreValid()) {
-      console.log('thank you');
+      const shopAPI = new ShopAPI();
+
+      shopAPI.postOrder({
+        cart,
+        user: {
+          ...omit(this.state, ['error', 'hasCompletePurchaseClick']),
+        }
+      }).then(() => {
+        this.setState({
+          showThankYouModal: true,
+        });
+      });
     }
+  };
+
+  handleShopMoreClick = () => {
+    const { clearCart, history } = this.props;
+
+    clearCart();
+    history.push(ROUTE.ALL_PRODUCTS);
   };
 
   renderInputFields = () => {
@@ -118,6 +143,8 @@ class CustomerInformation extends React.Component<
   };
   
   render() {
+    const { showThankYouModal } = this.state;
+
     return (
       <div className="customer-info-container">
         <div className="heading">Billing information</div>
@@ -130,6 +157,12 @@ class CustomerInformation extends React.Component<
           onClick={this.handleButtonClick}
           style={{ width: CUSTOMER_INFORMATION_FIELD_WIDTH }}
         >Complete Purchase</Button>
+
+        <Modal modalBodyClassName="customer-info-modal-body" show={showThankYouModal}>
+          <div className="header">Thank you! We have received your order.</div>
+          <p>Please wait 5 to 10 business days for your order to arrive.</p>
+          <Button type="primary" onClick={this.handleShopMoreClick}>Continue shopping</Button>
+        </Modal>
       </div>
     )
   }
