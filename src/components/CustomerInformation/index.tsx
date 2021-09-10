@@ -147,7 +147,7 @@ class CustomerInformation extends React.Component<
 
     return (
       <div className="customer-info-container">
-        <div className="heading">Billing information</div>
+        <div className="heading text">Billing information</div>
 
         {this.renderInputFields()}
 

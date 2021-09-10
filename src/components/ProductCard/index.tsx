@@ -1,4 +1,5 @@
 import React from 'react';
+import { ThemeContext } from '../../context/ThemeContext';
 import { ProductPurchase } from '../../store/reducers/userReducer';
 import { getProductVariantDetails } from '../../utils/productUtils';
 import ProductCardModal from '../ProductCardModal';
@@ -38,23 +39,29 @@ class ProductCard extends React.Component<ProductCardProps, ProductCardState> {
     const { showDetails } = this.state;
     const { initialVariant, variants, variantsOptionsAvailable } = getProductVariantDetails(product);
 
-    return initialVariant ? (
-      <div onClick={this.onClickProductCard} className="product-card-container">
-        <div
-          className="product-image"
-          style={{ backgroundImage: `url(${initialVariant.image})` }} />
-        <div className="product-details">
-          <p>{initialVariant.title}</p>
-        </div>
-        <ProductCardModal
-          show={showDetails}
-          initialVariant={initialVariant}
-          variants={variants}
-          onClickOutsideModalBody={this.onClickOutsideModalBody}
-          variantsOptionsAvailable={variantsOptionsAvailable}
-          addToCart={this.handleAddToCart} />
-      </div>
-    ) : null;
+    return (
+      <ThemeContext.Consumer>
+        {(theme) => {
+          return initialVariant ? (
+            <div onClick={this.onClickProductCard} className={`product-card-container ${theme}`}>
+              <div
+                className="product-image"
+                style={{ backgroundImage: `url(${initialVariant.image})` }} />
+              <div className="product-details">
+                <p>{initialVariant.title}</p>
+              </div>
+              <ProductCardModal
+                show={showDetails}
+                initialVariant={initialVariant}
+                variants={variants}
+                onClickOutsideModalBody={this.onClickOutsideModalBody}
+                variantsOptionsAvailable={variantsOptionsAvailable}
+                addToCart={this.handleAddToCart} />
+            </div>
+          ) : null;
+        }}
+      </ThemeContext.Consumer>
+    );
   }
 }
 

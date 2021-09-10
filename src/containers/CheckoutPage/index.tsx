@@ -56,7 +56,7 @@ class CheckoutPage extends React.Component<CheckoutPageProps> {
           </div>
 
           <div className="cart-items-footer">
-            <div>Total</div>
+            <div className="text">Total</div>
             <div className="total-price">${totalPrice}</div>
           </div>
         </div>

@@ -4,12 +4,12 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { applyMiddleware, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
-import './App.css';
 import HeaderNavigation from './components/HeaderNavigation';
 import { ROUTE } from './constants/route';
 import AllProductsPage from './containers/AllProductsPage';
 import CheckoutPage from './containers/CheckoutPage';
 import HomePage from './containers/HomePage';
+import ThemeContextProvider from './context/ThemeContext';
 import { rootReducer } from './store/rootReducer';
 import startRootSaga from './store/rootSaga';
 
@@ -24,7 +24,7 @@ function App() {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <div className="app-container">
+        <ThemeContextProvider>
           <HeaderNavigation />
           <Switch>
             <Route exact component={AllProductsPage} path={ROUTE.ALL_PRODUCTS} />
@@ -32,7 +32,7 @@ function App() {
             <Route exact component={HomePage} path={ROUTE.HOME} />
             <Redirect to={ROUTE.HOME} />
           </Switch>
-        </div>
+        </ThemeContextProvider>
       </BrowserRouter>
     </Provider>
   );
