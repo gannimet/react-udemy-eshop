@@ -1,7 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Button from '../../ui-components/Button';
-import { upperCaseFirstLetter } from '../../utils/helper';
 import './style.css';
 
 export type ThemeContextValue  = 'light' | 'dark';
@@ -45,14 +43,17 @@ class ThemeContextProvider extends React.Component<{}, ThemeContextProviderState
 
   render() {
     const { theme } = this.state;
+    const isLightTheme = theme === 'light';
+    const iconClassName = isLightTheme ? 'fa-sun-o' : 'fa-moon-o';
 
-    this.body.style.backgroundColor = theme === 'light' ? 'white' : 'black';
+    this.body.style.backgroundColor = isLightTheme ? 'white' : 'black';
 
     const themeButton = ReactDOM.createPortal(
-      <Button
+      <i
+        className={`fa ${iconClassName} theme-context-button ${theme}`}
+        aria-hidden="true"
         onClick={this.handleChangeTheme}
-        className={`theme-context-button ${theme}`}
-      >{`${upperCaseFirstLetter(theme)} Mode`}</Button>,
+      />,
       this.el,
     );
 
