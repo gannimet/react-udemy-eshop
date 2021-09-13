@@ -13,7 +13,11 @@ import { rootReducer } from './store/rootReducer';
 import startRootSaga from './store/rootSaga';
 
 const sagaMiddleware = createSagaMiddleware();
-const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(sagaMiddleware)));
+const store = createStore(
+  rootReducer,
+  (window as any).initialState,
+  composeWithDevTools(applyMiddleware(sagaMiddleware)),
+);
 
 sagaMiddleware.run(startRootSaga);
 

@@ -47,7 +47,7 @@ export interface Shop {
   productFilters: ProductFilters;
 }
 
-const shopInitialState: Shop = {
+export const shopInitialState: Shop = {
   shopProducts: {
     products: [],
     productsCount: 0,
