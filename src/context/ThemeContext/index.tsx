@@ -8,6 +8,7 @@ export const ThemeContext = React.createContext<ThemeContextValue>('light');
 
 interface ThemeContextProviderState {
   theme: ThemeContextValue;
+  showThemeButton: boolean;
 }
 
 class ThemeContextProvider extends React.Component<{}, ThemeContextProviderState> {
@@ -20,6 +21,7 @@ class ThemeContextProvider extends React.Component<{}, ThemeContextProviderState
 
     this.state = {
       theme: 'light',
+      showThemeButton: false,
     };
 
     this.root = document.querySelector('#root') as HTMLDivElement;
@@ -29,6 +31,10 @@ class ThemeContextProvider extends React.Component<{}, ThemeContextProviderState
 
   componentDidMount() {
     this.root.appendChild(this.el);
+
+    this.setState({
+      showThemeButton: true,
+    });
   }
 
   componentWillUnmount() {
@@ -42,20 +48,20 @@ class ThemeContextProvider extends React.Component<{}, ThemeContextProviderState
   };
 
   render() {
-    const { theme } = this.state;
+    const { theme, showThemeButton } = this.state;
     const isLightTheme = theme === 'light';
     const iconClassName = isLightTheme ? 'fa-sun-o' : 'fa-moon-o';
 
     this.body.style.backgroundColor = isLightTheme ? 'white' : 'black';
 
-    const themeButton = ReactDOM.createPortal(
+    const themeButton = showThemeButton ? ReactDOM.createPortal(
       <i
         className={`fa ${iconClassName} theme-context-button ${theme}`}
         aria-hidden="true"
         onClick={this.handleChangeTheme}
       />,
       this.el,
-    );
+    ) : null;
 
     return (
       <ThemeContext.Provider value={theme}>

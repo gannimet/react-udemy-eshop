@@ -1,5 +1,8 @@
+/* eslint-disable import/first */
+require.extensions['.css'] = () => undefined;
 import express from 'express';
 import fs from 'fs';
+import { JSDOM } from 'jsdom';
 import path from 'path';
 import { renderToString } from 'react-dom/server';
 import React, { Provider } from 'react-redux';
@@ -23,8 +26,10 @@ const app = express();
 
 app.use('/public', express.static('build'));
 
-const htmlFilePath = path.join(__dirname, '../build.index.html');
+const htmlFilePath = path.join(__dirname, '../build/index.html');
 const htmlContent = fs.readFileSync(htmlFilePath, { encoding: 'utf-8' });
+
+global.document = new JSDOM(htmlContent).window.document;
 
 app.get('*', async (req, res) => {
   let bestSellerProducts: Product[] = [];
@@ -73,7 +78,7 @@ app.get('*', async (req, res) => {
 
   const renderComponent = renderToString(
     <Provider store={store}>
-      <StaticRouter>
+      <StaticRouter location={req.url}>
         <ThemeContextProvider>
           <HeaderNavigation />
           <HandleAllErrors>
