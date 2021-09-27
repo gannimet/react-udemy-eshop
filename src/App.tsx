@@ -15,7 +15,6 @@ import startRootSaga from './store/rootSaga';
 const sagaMiddleware = createSagaMiddleware();
 const store = createStore(
   rootReducer,
-  (window as any).initialState,
   composeWithDevTools(applyMiddleware(sagaMiddleware)),
 );
 

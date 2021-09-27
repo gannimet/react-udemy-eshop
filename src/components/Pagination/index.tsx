@@ -1,68 +1,47 @@
-import React from 'react';
+import { useContext } from 'hoist-non-react-statics/node_modules/@types/react';
+import React, { useState } from 'react';
 import { ThemeContext } from '../../context/ThemeContext';
 import Button from '../../ui-components/Button';
-import { PaginationProps, PaginationState } from './interface';
+import { PaginationProps } from './interface';
 import './style.css';
 
-class Pagination extends React.Component<PaginationProps, PaginationState> {
-  constructor(props: PaginationProps) {
-    super(props);
+const Pagination: React.FC<PaginationProps> = ({ overrideSelectedPage, onChange, numberOfPages }) => {
+  const [selectedPage, setSelectedPage] = useState(1);
+  const theme = useContext(ThemeContext);
 
-    this.state = {
-      selectedPage: 1,
-    }
-  }
-
-  currentlySelectedPage = () => {
-    const { overrideSelectedPage } = this.props;
-    const { selectedPage } = this.state;
-
+  const getCurrentlySelectedPage = () => {
     return overrideSelectedPage || selectedPage;
   }
   
-  handleLeftCaretClick = () => {
-    const { onChange } = this.props;
-
-    const currentlySelectedPage = this.currentlySelectedPage();
+  const handleLeftCaretClick = () => {
+    const currentlySelectedPage = getCurrentlySelectedPage();
     const newPage = currentlySelectedPage === 1
       ? currentlySelectedPage
       : currentlySelectedPage - 1;
 
-    this.setState({
-      selectedPage: newPage,
-    });
+    setSelectedPage(newPage);
     onChange(newPage);
   }
   
-  handleRightCaretClick = () => {
-    const { numberOfPages, onChange,  } = this.props;
-
-    const currentlySelectedPage = this.currentlySelectedPage();
+  const handleRightCaretClick = () => {
+    const currentlySelectedPage = getCurrentlySelectedPage();
     const newPage = currentlySelectedPage === numberOfPages
       ? currentlySelectedPage
       : currentlySelectedPage + 1;
 
-    this.setState({
-      selectedPage: newPage,
-    });
+    setSelectedPage(newPage);
     onChange(newPage);
   }
 
-  pageClick = (page: number) => () => {
-    const { selectedPage} = this.state;
-
+  const pageClick = (page: number) => () => {
     if (selectedPage !== page) {
-      this.setState({
-        selectedPage: page,
-      });
-      this.props.onChange(page);
+      setSelectedPage(page);
+      onChange(page);
     }
   }
   
-  renderPageButtons = () => {
-    const { numberOfPages,  } = this.props;
-
-    const currentlySelectedPage = this.currentlySelectedPage();
+  const renderPageButtons = () => {
+    const currentlySelectedPage = getCurrentlySelectedPage();
 
     return [...new Array(numberOfPages)].map((_, index) => {
       const page = index + 1;
@@ -71,36 +50,28 @@ class Pagination extends React.Component<PaginationProps, PaginationState> {
         <Button
           key={page}
           selected={currentlySelectedPage === page}
-          onClick={this.pageClick(page)}
+          onClick={pageClick(page)}
           className="page-button"
         >{page}</Button>
       );
     });
   }
 
-  render() {
-    return (
-      <ThemeContext.Consumer>
-        {(theme) => {
-          return (
-            <div className={`pagination-container ${theme}`}>
-              <i
-                className="fa fa-caret-left page-caret"
-                aria-hidden="true"
-                onClick={this.handleLeftCaretClick} />
-              <div className="pages-container">
-                {this.renderPageButtons()}
-              </div>
-              <i
-                className="fa fa-caret-right page-caret"
-                aria-hidden="true"
-                onClick={this.handleRightCaretClick} />
-            </div>
-          );
-        }}
-      </ThemeContext.Consumer>
-    )
-  }
+  return (
+    <div className={`pagination-container ${theme}`}>
+      <i
+        className="fa fa-caret-left page-caret"
+        aria-hidden="true"
+        onClick={handleLeftCaretClick} />
+      <div className="pages-container">
+        {renderPageButtons()}
+      </div>
+      <i
+        className="fa fa-caret-right page-caret"
+        aria-hidden="true"
+        onClick={handleRightCaretClick} />
+    </div>
+  )
 }
 
 export default Pagination;
