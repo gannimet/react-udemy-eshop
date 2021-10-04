@@ -1,50 +1,39 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { ModalProps } from './interface';
 import './style.css';
 
-class Modal extends React.Component<ModalProps> {
-  root: HTMLDivElement;
-  el: HTMLDivElement;
+export const Modal: React.FC<ModalProps> = ({
+  onClickOutsideModalBody, show = true, modalBodyClassName, children
+}) => {
+  const root = useRef(document.querySelector('#root') as HTMLDivElement);
+  const el = useRef(document.createElement('div'));
 
-  constructor(props: ModalProps) {
-    super(props);
+  useEffect(() => {
+    root.current.appendChild(el.current);
 
-    this.root = document.querySelector('#root') as HTMLDivElement;
-    this.el = document.createElement('div');
-  }
+    return function cleanup() {
+      root.current.removeChild(el.current);
+    };
+  }, []);
 
-  componentDidMount() {
-    this.root.appendChild(this.el);
-  }
-
-  componentWillUnmount() {
-    this.root.removeChild(this.el);
-  }
-
-  removeOnClickPropagation = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const removeOnClickPropagation = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation();
   }
 
-  onClickOutsideModalBody = () => {
-    const { onClickOutsideModalBody } = this.props;
-
+  const handleClickOutsideModalBody = () => {
     onClickOutsideModalBody && onClickOutsideModalBody();
   }
 
-  render() {
-    const { show = true, modalBodyClassName, children } = this.props;
-
-    return show ? ReactDOM.createPortal(
-      <div onClick={this.removeOnClickPropagation} className="modal-container">
-        <div onClick={this.onClickOutsideModalBody} className="modal-overlay" />
-        <div className={`modal-body ${modalBodyClassName || ''}`}>
-          {children}
-        </div>
-      </div>,
-      this.el,
-    ) : null;
-  }
+  return show ? ReactDOM.createPortal(
+    <div onClick={removeOnClickPropagation} className="modal-container">
+      <div onClick={handleClickOutsideModalBody} className="modal-overlay" />
+      <div className={`modal-body ${modalBodyClassName || ''}`}>
+        {children}
+      </div>
+    </div>,
+    el.current,
+  ) : null;
 }
 
 export default Modal;
