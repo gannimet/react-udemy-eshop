@@ -1,5 +1,4 @@
-import { useContext } from 'hoist-non-react-statics/node_modules/@types/react';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { ThemeContext } from '../../context/ThemeContext';
 import Button from '../../ui-components/Button';
 import { PaginationProps } from './interface';
