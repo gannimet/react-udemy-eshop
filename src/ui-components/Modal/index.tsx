@@ -13,6 +13,7 @@ export const Modal: React.FC<ModalProps> = ({
     root.current.appendChild(el.current);
 
     return function cleanup() {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       root.current.removeChild(el.current);
     };
   }, []);
