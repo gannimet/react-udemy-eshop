@@ -6,9 +6,10 @@ import { upperCaseFirstLetter } from '../../utils/helper';
 import { ProductFiltersPropsProps } from './interface';
 import './style.css';
 
-const AllProductsSideBar: React.FC<ProductFiltersPropsProps> = (
+const AllProductsSideBar = React.memo<ProductFiltersPropsProps>((
   { productFilters, userFilters, onUpdateUserFilters }
 ) => {
+  console.log('Sidebar render');
   const handleFilterChange = (filterCategory: string, filterValue: string) => (value: boolean) => {
     let newUserFilters: ProductFilters;
 
@@ -51,6 +52,6 @@ const AllProductsSideBar: React.FC<ProductFiltersPropsProps> = (
       {renderFilters()}
     </div>
   )
-};
+});
 
 export default AllProductsSideBar;
