@@ -1,95 +1,84 @@
-import React from 'react';
-import { connect, MapDispatchToPropsFunction, MapStateToProps } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch } from 'redux';
 import AllProductsSideBar from '../../components/AllProductsSideBar';
 import Pagination from '../../components/Pagination';
 import ProductCard from '../../components/ProductCard';
 import ShopAction from '../../store/actions/shopAction';
 import UserAction from '../../store/actions/userAction';
-import { StoreStateType } from '../../store/rootReducer';
-import { AllProductsDispatchToProps, AllProductsOwnProps, AllProductsPageProps, AllProductsStateProps } from './interface';
+import { ProductFilters } from '../../store/reducers/shopReducer';
+import { ProductPurchase } from '../../store/reducers/userReducer';
+import { StoreAction, StoreStateType } from '../../store/rootReducer';
+import { AllProductsPageProps } from './interface';
 import './style.css';
 
-class AllProductsPage extends React.Component<AllProductsPageProps> {
-  componentDidMount() {
-    const { shopProducts } = this.props;
+const AllProductsPage: React.FC<AllProductsPageProps> = () => {
+  const { shop, user } = useSelector<StoreStateType, StoreStateType>(
+    (state) => state,
+    (prevState, nextState) => {
+      const { shop: prevShop, user: prevUser } = prevState;
+      const { shop: nextShop, user: nextUser } = nextState;
 
+      return nextShop.shopProducts === prevShop.shopProducts &&
+        nextShop.productFilters === prevShop.productFilters &&
+        nextUser.filters === prevUser.filters &&
+        nextUser.shopProductsPage === prevUser.shopProductsPage;
+    },
+  );
+  const dispatch = useDispatch<Dispatch<StoreAction>>();
+  const { shopProducts, productFilters } = shop;
+  const { filters: userFilters, shopProductsPage: userSelectedPage } = user;
+  const { fetchShopProductsAndFilters } = new ShopAction();
+  const { updateUserFilters, updateUserShopProductsPage, addToCart } = new UserAction();
+
+  useEffect(() => {
     if (!shopProducts.products.length) {
-      this.props.fetchShopProductsAndFilters();
+      dispatch(fetchShopProductsAndFilters());
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleAddToCart = (productPurchase: ProductPurchase) => {
+    dispatch(addToCart(productPurchase));
+  };
+
+  const handlePageChange = (selectedPage: number) => {
+    if (userSelectedPage !== selectedPage) {
+      dispatch(updateUserShopProductsPage(selectedPage));
     }
   }
 
-  renderAllProducts = () => {
-    const { shopProducts, addToCart } = this.props;
+  const handleUpdateUserFilters = (filters: ProductFilters) => {
+    dispatch(updateUserFilters(filters));
+  };
 
+  const renderAllProducts = () => {
     return shopProducts.products.map((product) => {
       return (
         <div key={product.id} className="product-item-container">
-          <ProductCard product={product} addToCart={addToCart} />
+          <ProductCard product={product} addToCart={handleAddToCart} />
         </div>
       )
     });
   };
 
-  handlePageChange = (selectedPage: number) => {
-    const { userSelectedPage, updateUserShopProductsPage } = this.props;
-
-    if (userSelectedPage !== selectedPage) {
-      updateUserShopProductsPage(selectedPage);
-    }
-  }
-
-  render() {
-    const {
-      productFilters, userFilters, updateUserFilters, shopProducts, userSelectedPage
-    } = this.props;
-
-    return (
-      <div className="all-products-page-container">
-        <AllProductsSideBar
-          productFilters={productFilters}
-          userFilters={userFilters}
-          onUpdateUserFilters={updateUserFilters} />
-        <div className="all-products-container">
-          <div className="all-products">
-            {this.renderAllProducts()}
-          </div>
-          <Pagination
-            onChange={this.handlePageChange}
-            numberOfPages={shopProducts.totalPages}
-            overrideSelectedPage={userSelectedPage} />
+  return (
+    <div className="all-products-page-container">
+      <AllProductsSideBar
+        productFilters={productFilters}
+        userFilters={userFilters}
+        onUpdateUserFilters={handleUpdateUserFilters} />
+      <div className="all-products-container">
+        <div className="all-products">
+          {renderAllProducts()}
         </div>
+        <Pagination
+          onChange={handlePageChange}
+          numberOfPages={shopProducts.totalPages}
+          overrideSelectedPage={userSelectedPage} />
       </div>
-    )
-  }
+    </div>
+  );
 }
 
-const mapStateToProps: MapStateToProps<
-  AllProductsStateProps,
-  AllProductsOwnProps,
-  StoreStateType
-> = (state) => {
-  const { shopProducts, productFilters } = state.shop;
-  const { filters, shopProductsPage } = state.user;
-
-  return {
-    shopProducts,
-    productFilters,
-    userFilters: filters,
-    userSelectedPage: shopProductsPage,
-  };
-};
-
-const mapDispatchToProps: MapDispatchToPropsFunction<AllProductsDispatchToProps, AllProductsOwnProps> = (dispatch) => {
-  const { fetchShopProducts, fetchShopProductsAndFilters } = new ShopAction();
-  const { updateUserFilters, updateUserShopProductsPage, addToCart } = new UserAction();
-
-  return {
-    fetchShopProducts: (options) => dispatch(fetchShopProducts(options)),
-    fetchShopProductsAndFilters: () => dispatch(fetchShopProductsAndFilters()),
-    updateUserFilters: (filters) => dispatch(updateUserFilters(filters)),
-    updateUserShopProductsPage: (shopProductsPage) => dispatch(updateUserShopProductsPage(shopProductsPage)),
-    addToCart: (productPurchase) => dispatch(addToCart(productPurchase)),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(AllProductsPage);
+export default AllProductsPage;
