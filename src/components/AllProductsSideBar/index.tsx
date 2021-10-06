@@ -9,7 +9,6 @@ import './style.css';
 const AllProductsSideBar = React.memo<ProductFiltersPropsProps>((
   { productFilters, userFilters, onUpdateUserFilters }
 ) => {
-  console.log('Sidebar render');
   const handleFilterChange = (filterCategory: string, filterValue: string) => (value: boolean) => {
     let newUserFilters: ProductFilters;
 

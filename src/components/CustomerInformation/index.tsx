@@ -1,4 +1,5 @@
-import React from 'react';
+import update from 'immutability-helper';
+import React, { useMemo, useRef, useState } from 'react';
 import ShopAPI from '../../api/shopAPI';
 import { ROUTE } from '../../constants/route';
 import {
@@ -12,57 +13,40 @@ import {
 import Button from '../../ui-components/Button';
 import Input from '../../ui-components/Input';
 import Modal from '../../ui-components/Modal';
-import { omit } from '../../utils/helper';
-import { CustomerInformationFieldRefs, CustomerInformationProps, CustomerInformationState } from './interface';
+import { CustomerInformationFieldRefs, CustomerInformationProps } from './interface';
 import './style.css';
+import { initializeFieldRefs } from './utils';
 
-class CustomerInformation extends React.Component<
-  CustomerInformationProps,
-  CustomerInformationState
-> {
-  fieldRefs: CustomerInformationFieldRefs = {} as CustomerInformationFieldRefs;
+const CustomerInformation: React.FC<CustomerInformationProps> = ({
+  cart, clearCart, history
+}) => {
+  const fieldsList = useMemo(() => Object.keys(CUSTOMER_INFORMATION_FIELDS_LIST), []);
+  const initialFieldRefs = useMemo(initializeFieldRefs, []);
+  const fieldRefs = useRef<CustomerInformationFieldRefs>(initialFieldRefs);
+  const [fieldState, setFieldState] = useState<CustomerInformationFieldsList>({ ...CUSTOMER_INFORMATION_FIELD_INITIAL_STATE });
+  const [fieldErrors, setFieldErrors] = useState<CustomerInformationFieldsList>({ ...CUSTOMER_INFORMATION_FIELD_INITIAL_STATE });
+  const [hasCompletePurchaseClick, setHasCompletePurchaseClick] = useState(false);
+  const [showThankYouModal, setShowThankYouModal] = useState(false);
 
-  constructor(props: CustomerInformationProps) {
-    super(props);
-
-    this.state = {
-      ...CUSTOMER_INFORMATION_FIELD_INITIAL_STATE,
-      hasCompletePurchaseClick: false,
-      error: {
-        ...CUSTOMER_INFORMATION_FIELD_INITIAL_STATE
-      },
-      showThankYouModal: false,
-    };
-
-    Object.keys(CUSTOMER_INFORMATION_FIELDS_LIST).forEach((key) => {
-      const fieldKey = key as CustomerInformationField;
-      this.fieldRefs[fieldKey] = React.createRef();
-    });
-  }
-
-  validateInputField = (field: CustomerInformationField, value: string) => {
-    this.setState({
-      error: {
-        ...this.state.error,
-        [field]: value ? '' : CUSTOMER_INFORMATION_FIELD_ERROR,
-      }
-    });
+  const validateInputField = (field: CustomerInformationField, value: string) => {
+    setFieldErrors(update(fieldErrors, {
+      [field]: { $set: value ? '' : CUSTOMER_INFORMATION_FIELD_ERROR },
+    }));
   };
 
-  handleInputChange = (field: CustomerInformationField) => {
+  const handleInputChange = (field: CustomerInformationField) => {
     return (event: React.ChangeEvent<HTMLInputElement>) => {
       const { value } = event.currentTarget;
-      const { hasCompletePurchaseClick } = this.state;
 
-      this.setState({
-        [field]: value,
-      } as CustomerInformationFieldsList);
+      setFieldState(update(fieldState, {
+        [field]: { $set: value },
+      }));
 
-      hasCompletePurchaseClick && this.validateInputField(field, value);
+      hasCompletePurchaseClick && validateInputField(field, value);
     };
   };
 
-  allFieldsAreValid = () => {
+  const allFieldsAreValid = () => {
     let hasError = false;
     const error: CustomerInformationFieldsList = {
       ...CUSTOMER_INFORMATION_FIELD_INITIAL_STATE,
@@ -70,60 +54,48 @@ class CustomerInformation extends React.Component<
 
     let hasFocusToErrorField = false;
 
-    Object.keys(CUSTOMER_INFORMATION_FIELDS_LIST).forEach((key) => {
+    fieldsList.forEach((key) => {
       const fieldKey = key as CustomerInformationField;
 
-      if (!this.state[fieldKey]) {
+      if (!fieldState[fieldKey]) {
         error[fieldKey] = CUSTOMER_INFORMATION_FIELD_ERROR;
         hasError = true;
 
         if (!hasFocusToErrorField) {
           hasFocusToErrorField = true;
-          const fieldRef = this.fieldRefs[fieldKey];
+          const fieldRef = fieldRefs.current[fieldKey];
           fieldRef.current && fieldRef.current.focus();
         }
       }
     });
 
-    this.setState({ error });
+    setFieldErrors(error);
 
     return !hasError;
   };
 
-  handleButtonClick = () => {
-    const { cart } = this.props;
+  const handleButtonClick = () => {
+    setHasCompletePurchaseClick(true);
 
-    this.setState({
-      hasCompletePurchaseClick: true,
-    })
-
-    if (this.allFieldsAreValid()) {
+    if (allFieldsAreValid()) {
       const shopAPI = new ShopAPI();
 
       shopAPI.postOrder({
         cart,
-        user: {
-          ...omit(this.state, ['error', 'hasCompletePurchaseClick']),
-        }
+        user: fieldState,
       }).then(() => {
-        this.setState({
-          showThankYouModal: true,
-        });
+        setShowThankYouModal(true);
       });
     }
   };
 
-  handleShopMoreClick = () => {
-    const { clearCart, history } = this.props;
-
+  const handleShopMoreClick = () => {
     clearCart();
     history.push(ROUTE.ALL_PRODUCTS);
   };
 
-  renderInputFields = () => {
-    const { error } = this.state;
-
-    return Object.keys(CUSTOMER_INFORMATION_FIELDS_LIST).map((field) => {
+  const renderInputFields = () => {
+    return fieldsList.map((field) => {
       const customerInfoField = field as CustomerInformationField;
       const label = CUSTOMER_INFORMATION_FIELDS_LIST[customerInfoField];
 
@@ -131,41 +103,37 @@ class CustomerInformation extends React.Component<
         <Input
           key={label}
           label={label}
-          onChange={this.handleInputChange(customerInfoField)}
+          onChange={handleInputChange(customerInfoField)}
           inputContainerStyle={{ marginBottom: '10px' }}
           inputStyle={{ width: CUSTOMER_INFORMATION_FIELD_WIDTH }}
-          error={error[customerInfoField]}
-          positive={!!this.state[customerInfoField]}
-          inputRef={this.fieldRefs[customerInfoField]}
+          error={fieldErrors[customerInfoField]}
+          positive={!!fieldState[customerInfoField]}
+          inputRef={fieldRefs.current[customerInfoField]}
         />
       );
     });
   };
   
-  render() {
-    const { showThankYouModal } = this.state;
+  return (
+    <div className="customer-info-container">
+      <div className="heading text">Billing information</div>
 
-    return (
-      <div className="customer-info-container">
-        <div className="heading text">Billing information</div>
+      {renderInputFields()}
 
-        {this.renderInputFields()}
+      <Button
+        type="primary"
+        className="complete-purchase-btn"
+        onClick={handleButtonClick}
+        style={{ width: CUSTOMER_INFORMATION_FIELD_WIDTH }}
+      >Complete Purchase</Button>
 
-        <Button
-          type="primary"
-          className="complete-purchase-btn"
-          onClick={this.handleButtonClick}
-          style={{ width: CUSTOMER_INFORMATION_FIELD_WIDTH }}
-        >Complete Purchase</Button>
-
-        <Modal modalBodyClassName="customer-info-modal-body" show={showThankYouModal}>
-          <div className="header">Thank you! We have received your order.</div>
-          <p>Please wait 5 to 10 business days for your order to arrive.</p>
-          <Button type="primary" onClick={this.handleShopMoreClick}>Continue shopping</Button>
-        </Modal>
-      </div>
-    )
-  }
+      <Modal modalBodyClassName="customer-info-modal-body" show={showThankYouModal}>
+        <div className="header">Thank you! We have received your order.</div>
+        <p>Please wait 5 to 10 business days for your order to arrive.</p>
+        <Button type="primary" onClick={handleShopMoreClick}>Continue shopping</Button>
+      </Modal>
+    </div>
+  );
 }
 
 export default CustomerInformation;
